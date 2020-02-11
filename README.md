@@ -1,5 +1,3 @@
-# proxsgd
-
 This is the TensorFlow implementation of the ProxSGD algorithm proposed in following paper:
 
 "Prox-SGD: Training Structured Neural Networks under Regularization and Constraints," **International Conference on Learning Representation (ICLR)**, Apr. 2020. [URL](https://openreview.net/forum?id=HygpthEtvr)
