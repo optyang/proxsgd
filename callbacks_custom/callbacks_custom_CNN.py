@@ -15,6 +15,7 @@
 """
 import tensorflow.keras as keras
 import numpy as np
+import matplotlib.pyplot as plt
 import pickle
 import os
 
@@ -132,6 +133,25 @@ class metrics(keras.callbacks.Callback):
         for weights_layer in self.w_net:
             l1_norm += np.sum(np.absolute(weights_layer))
         self.l1.append(l1_norm)
+
+        if os.path.isdir('./figures'):
+            pass
+        else:
+            os.mkdir('./figures')
+
+        Weights_values = self.w_net
+        data = Weights_values
+        data_flattened = np.concatenate((data[0].flatten(), data[1].flatten(), data[2].flatten(),
+                                         data[3].flatten(), data[4].flatten(), data[5].flatten(), data[6].flatten()), axis=None)
+        x = np.sort(data_flattened)
+        y = np.arange(1, len(x) + 1) / len(x)
+        plt.figure(4)
+        plt.plot(x, y)
+        plt.xlim((-0.01, 0.01))
+        plt.grid(True)
+        plt.savefig('./figures/cifar10_cdf_temp.png')
+        plt.show()
+        return
         return
 
     def on_batch_begin(self, batch, logs={}):

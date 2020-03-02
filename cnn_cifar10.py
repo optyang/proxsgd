@@ -42,59 +42,74 @@ def create_model(active_bnn=0):
     num_classes = 10
     model = Sequential()
     if active_bnn == 1:
-        model.add(Conv2D(32, (5, 5), padding='same', input_shape=(32, 32, 3), name='conv1'))
-        model.add(BatchNormalization())
-        model.add(Activation(binary_tanh))
-        model.add(Conv2D(32, (3, 3), padding='same', name='conv2'))
-        model.add(BatchNormalization())
-        model.add(Activation(binary_tanh))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Dropout(0.2))
-        model.add(Conv2D(64, (5, 5), padding='same', name='conv3'))
-        model.add(BatchNormalization())
-        model.add(Activation(binary_tanh))
-        model.add(Conv2D(64, (3, 3), padding='same', name='conv4'))
-        model.add(BatchNormalization())
-        model.add(Activation(binary_tanh))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Dropout(0.3))
-        model.add(Conv2D(128, (3, 3), padding='same', name='conv5'))
-        model.add(BatchNormalization())
-        model.add(Activation(binary_tanh))
-        model.add(Conv2D(128, (3, 3), padding='same', name='conv6'))
-        model.add(BatchNormalization())
-        model.add(Activation(binary_tanh))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Dropout(0.4))
-        model.add(Flatten())
-        model.add(Dense(num_classes, activation='softmax', name='fc1'))
-    else:
         model.add(Conv2D(32, (3, 3), padding='same', input_shape=(32, 32, 3), name='conv1'))
         model.add(BatchNormalization())
-        model.add(Activation('relu'))
+        model.add(Activation(binary_tanh))
         model.add(Conv2D(32, (3, 3), padding='same', name='conv2'))
         model.add(BatchNormalization())
-        model.add(Activation('relu'))
+        model.add(Activation(binary_tanh))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Dropout(0.2))
         model.add(Conv2D(64, (3, 3), padding='same', name='conv3'))
         model.add(BatchNormalization())
-        model.add(Activation('relu'))
+        model.add(Activation(binary_tanh))
         model.add(Conv2D(64, (3, 3), padding='same', name='conv4'))
         model.add(BatchNormalization())
-        model.add(Activation('relu'))
+        model.add(Activation(binary_tanh))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Dropout(0.2))
         model.add(Conv2D(128, (3, 3), padding='same', name='conv5'))
         model.add(BatchNormalization())
-        model.add(Activation('relu'))
+        model.add(Activation(binary_tanh))
         model.add(Conv2D(128, (3, 3), padding='same', name='conv6'))
         model.add(BatchNormalization())
-        model.add(Activation('relu'))
+        model.add(Activation(binary_tanh))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Dropout(0.2))
         model.add(Flatten())
         model.add(Dense(num_classes, activation='softmax', name='fc1'))
+    else:
+        model.add(Conv2D(32, (3, 3), padding='same', input_shape=(32, 32, 3),
+                         kernel_regularizer=regularizers.l1(1e-4),
+                         name='conv1'))
+        model.add(BatchNormalization())
+        model.add(Activation('elu'))
+        model.add(Conv2D(32, (3, 3), padding='same',
+                         kernel_regularizer=regularizers.l1(1e-4),
+                         name='conv2'))
+        model.add(BatchNormalization())
+        model.add(Activation('elu'))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(Dropout(0.2))
+        model.add(Conv2D(64, (3, 3), padding='same',
+                         kernel_regularizer=regularizers.l1(1e-4),
+                         name='conv3'))
+        model.add(BatchNormalization())
+        model.add(Activation('elu'))
+        model.add(Conv2D(64, (3, 3), padding='same',
+                         kernel_regularizer=regularizers.l1(1e-4),
+                         name='conv4'))
+        model.add(BatchNormalization())
+        model.add(Activation('elu'))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(Dropout(0.2))
+        model.add(Conv2D(128, (3, 3), padding='same',
+                         kernel_regularizer=regularizers.l1(1e-4),
+                         name='conv5'))
+        model.add(BatchNormalization())
+        model.add(Activation('elu'))
+        model.add(Conv2D(128, (3, 3), padding='same',
+                         kernel_regularizer=regularizers.l1(1e-4),
+                         name='conv6'))
+        model.add(BatchNormalization())
+        model.add(Activation('elu'))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+
+        model.add(Dropout(0.2))
+        model.add(Flatten())
+        model.add(Dense(num_classes, activation='softmax',
+                        kernel_regularizer=regularizers.l1(1e-4),
+                        name='fc1'))
     return model
 
 def train_model(active_bnn=0, optimtype='proxsgd', verbose=True, Epoch=5, T=1):
@@ -104,12 +119,12 @@ def train_model(active_bnn=0, optimtype='proxsgd', verbose=True, Epoch=5, T=1):
     datagen.fit(x_train)
 
     if optimtype == 'proxsgd':
-        optim = ProxSGD(epsilon_initial=0.06, epsilon_decay=0.5, rho_initial=0.9, rho_decay=0.5, beta=0.999, mu=1e-4,
+        optim = ProxSGD(epsilon_initial=0.06, epsilon_decay=0.5, rho_initial=0.9, rho_decay=0.5, beta=0.999, mu=5e-5,
                         clip_bounds=None)
         model = create_model(active_bnn)
 
     elif optimtype == 'proxsgd_bnn':
-        optim = ProxSGD_BNN(epsilon_initial=0.05, epsilon_decay=0.6, rho_initial=0.9, rho_decay=0.6, beta=0.999, mu_x=None,
+        optim = ProxSGD_BNN(epsilon_initial=0.06, epsilon_decay=0.5, rho_initial=0.9, rho_decay=0.5, beta=0.999, mu_x=None,
                             clip_bounds_x=[-1.0, 1.0], mu_a=None, clip_bounds_a=[0.0, 1.0])
         model = create_model(active_bnn)
 
@@ -139,7 +154,7 @@ def train_model(active_bnn=0, optimtype='proxsgd', verbose=True, Epoch=5, T=1):
 
 if __name__ == "__main__":
     Round = 1
-    Epoch = 20
+    Epoch = 125
     Loss_matrix = np.zeros([Round, Epoch])
     Accuracy_matrix = np.zeros([Round, Epoch])
     NormL1_matrix = np.zeros([Round, Epoch])
@@ -180,6 +195,7 @@ if __name__ == "__main__":
     ep = np.arange(Epoch)
     plt.figure(1)
     plt.plot(ep, Mean_loss_values)
+    plt.grid(True)
     plt.savefig('./figures/cifar10_loss.png')
     plt.show()
 
@@ -188,16 +204,19 @@ if __name__ == "__main__":
     ep = np.arange(Epoch)
     plt.figure(2)
     plt.plot(ep, Mean_accuracy_values)
+    plt.grid(True)
     plt.savefig('./figures/cifar10_acc.png')
     plt.show()
 
     Weights_values = pickle.load(open('./variables_cnn/Weights_proxsgd', 'rb'))
     data = Weights_values
     data_flattened = np.concatenate((data[0].flatten(), data[1].flatten(), data[2].flatten(),
-                                     data[3].flatten(), data[4].flatten(), data[5].flatten()), axis=None)
+                                     data[3].flatten(), data[4].flatten(), data[5].flatten(), data[6].flatten()), axis=None)
     x = np.sort(data_flattened)
     y = np.arange(1, len(x)+1)/len(x)
     plt.figure(3)
     plt.plot(x, y)
+    plt.xlim((-3, 3))
+    plt.grid(True)
     plt.savefig('./figures/cifar10_cdf.png')
     plt.show()

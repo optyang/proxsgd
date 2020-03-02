@@ -77,12 +77,12 @@ def train_model(mu_reg=1e-4, active_bnn=1, optimtype='proxsgd_bnn', verbose=True
     """
            
     if optimtype == 'proxsgd':
-        optim = ProxSGD(epsilon_initial=0.06, epsilon_decay=0.5, rho_initial=0.9, rho_decay=0.5, beta=0.999, mu=1e-4,
+        optim = ProxSGD(epsilon_initial=0.06, epsilon_decay=0.5, rho_initial=0.9, rho_decay=0.5, beta=0.999, mu=5e-5,
                         clip_bounds=None)
         model = create_model(mu_reg, active_bnn)
 
     elif optimtype == 'proxsgd_bnn':
-        optim = ProxSGD_BNN(epsilon_initial=0.06, epsilon_decay=0.62, rho_initial=1.0, rho_decay=0.50, beta=0.999, mu_x=None,
+        optim = ProxSGD_BNN(epsilon_initial=0.06, epsilon_decay=0.5, rho_initial=0.9, rho_decay=0.5, beta=0.999, mu_x=None,
                             clip_bounds_x=[-1.0, 1.0], mu_a=None, clip_bounds_a=[0.0, 1.0])
         model = create_model(mu_reg, active_bnn)
 
@@ -111,7 +111,7 @@ def train_model(mu_reg=1e-4, active_bnn=1, optimtype='proxsgd_bnn', verbose=True
 
 if __name__ == "__main__":
     Round = 1
-    Epoch = 30
+    Epoch = 20
     Loss_matrix = np.zeros([Round, Epoch])
     Accuracy_matrix = np.zeros([Round, Epoch])
     NormL1_matrix = np.zeros([Round, Epoch])
@@ -148,6 +148,7 @@ if __name__ == "__main__":
     ep = np.arange(Epoch)
     plt.figure(1)
     plt.plot(ep, Mean_loss_values)
+    plt.grid(True)
     plt.savefig('./figures/mnist_loss.png')
     plt.show()
 
@@ -156,6 +157,7 @@ if __name__ == "__main__":
     ep = np.arange(Epoch)
     plt.figure(2)
     plt.plot(ep, Mean_accuracy_values)
+    plt.grid(True)
     plt.savefig('./figures/mnist_acc.png')
     plt.show()
 
@@ -168,5 +170,6 @@ if __name__ == "__main__":
     plt.figure(3)
     plt.plot(x, y)
     plt.xlim((-3, 3))
+    plt.grid(True)
     plt.savefig('./figures/mnist_cdf.png')
     plt.show()

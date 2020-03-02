@@ -47,7 +47,7 @@ class ProxSGD_BNN(Optimizer):
         rho          = self.rho_initial / ((iteration + 4) ** self.rho_decay)
         beta         = self.beta
         delta        = 1e-8
-        mu_bnn       = 0.0006
+        mu_bnn       = 0.00025
         if self.clip_bounds_x is not None:
             low_x = self.clip_bounds_x[0]
             up_x  = self.clip_bounds_x[1]

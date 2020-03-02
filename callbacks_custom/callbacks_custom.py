@@ -134,14 +134,12 @@ class metrics(keras.callbacks.Callback):
         self.l1.append(l1_norm)
 
         #-------------------------------------------------------------------------------------------------
-        '''
-        if os.path.isdir('./variables'):
+        if os.path.isdir('./figures'):
             pass
         else:
-            os.mkdir('./variables')
-
-        pickle.dump(self.w_net, open('./variables/Weights_proxsgd', 'wb'))
-        Weights_values = pickle.load(open('./variables/Weights_proxsgd', 'rb'))
+            os.mkdir('./figures')
+        
+        Weights_values = self.w_net
         data = Weights_values
         data_flattened = np.concatenate((data[0].flatten(), data[1].flatten(), data[2].flatten(),
                                          data[3].flatten(), data[4].flatten(), data[5].flatten()), axis=None)
@@ -150,8 +148,9 @@ class metrics(keras.callbacks.Callback):
         plt.figure(4)
         plt.plot(x, y)
         plt.xlim((-3, 3))
+        plt.grid(True)
+        plt.savefig('./figures/mnist_cdf_temp.png')
         plt.show()
-        '''
         return
 
     def on_batch_begin(self, batch, logs={}):
